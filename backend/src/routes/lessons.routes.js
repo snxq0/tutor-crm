@@ -1,0 +1,12 @@
+const express = require("express");
+const controller = require("../controllers/lessons.controller");
+
+const router = express.Router();
+
+router.get("/", controller.getAll);
+router.post("/", controller.create);
+router.patch("/:id", controller.update);
+router.patch("/:id/status", controller.updateStatus);
+router.delete("/:id", controller.remove);
+
+module.exports = router;
