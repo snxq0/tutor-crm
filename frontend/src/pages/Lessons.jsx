@@ -9,6 +9,7 @@ export default function Lessons() {
   const [lessons, setLessons] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [sortAsc, setSortAsc] = useState(true);
 
   const [form, setForm] = useState({
     date: "",
@@ -33,6 +34,13 @@ export default function Lessons() {
     setLessons(res.data);
   };
 
+  // 🔥 Сортировка
+  const sortedLessons = [...lessons].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return sortAsc ? dateA - dateB : dateB - dateA;
+  });
+
   const openCreateModal = () => {
     setEditingId(null);
     setForm({ date: "", duration: 60, note: "" });
@@ -51,7 +59,6 @@ export default function Lessons() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!studentId || !form.date) return;
 
     if (editingId) {
@@ -93,20 +100,36 @@ export default function Lessons() {
     }
   };
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("de-DE");
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Lessons</h2>
 
-        {studentId && (
-          <button
-            onClick={openCreateModal}
-            className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg"
-          >
-            + Add Lesson
-          </button>
-        )}
+        <div className="flex gap-3">
+
+          {studentId && (
+            <button
+              onClick={() => setSortAsc(!sortAsc)}
+              className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg text-sm"
+            >
+              Sort: {sortAsc ? "Old → New" : "New → Old"}
+            </button>
+          )}
+
+          {studentId && (
+            <button
+              onClick={openCreateModal}
+              className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg"
+            >
+              + Add Lesson
+            </button>
+          )}
+        </div>
       </div>
 
       <select
@@ -136,9 +159,9 @@ export default function Lessons() {
             </thead>
 
             <tbody>
-              {lessons.map((lesson) => (
+              {sortedLessons.map((lesson) => (
                 <tr key={lesson.id} className="border-t border-gray-800">
-                  <td className="p-3">{lesson.date}</td>
+                  <td className="p-3">{formatDate(lesson.date)}</td>
                   <td className="p-3">{lesson.duration} min</td>
                   <td className="p-3">
                     <div className="flex gap-2 flex-wrap">
