@@ -1,36 +1,11 @@
-const service = require("../services/students.service");
+const express = require("express");
+const controller = require("../controllers/students.controller");
 
-function getAll(req, res) {
-  res.json(service.getAll());
-}
+const router = express.Router();
 
-function create(req, res) {
-  try {
-    const student = service.create(req.body);
-    res.status(201).json(student);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-}
+router.get("/", controller.getAll);
+router.post("/", controller.create);
+router.patch("/:id", controller.update);
+router.delete("/:id", controller.remove);
 
-function update(req, res) {
-  const updated = service.update(req.params.id, req.body);
-
-  if (!updated) {
-    return res.status(404).json({ message: "Student not found" });
-  }
-
-  res.json(updated);
-}
-
-function remove(req, res) {
-  service.remove(req.params.id);
-  res.json({ message: "Deleted" });
-}
-
-module.exports = {
-  getAll,
-  create,
-  update,
-  remove
-};
+module.exports = router;
