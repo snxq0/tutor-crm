@@ -1,26 +1,27 @@
-const { readData, writeData } = require('../utils/fileStorage');
-const { generateId } = require('../utils/idGenerator');
+const { readData, writeData } = require("../utils/fileStorage");
+const { generateId } = require("../utils/idGenerator");
 
-const FILE = 'students.json';
+const FILE = "students.json";
 
 function getAll() {
   return readData(FILE);
 }
 
-function getById(id) {
-  const students = readData(FILE);
-  return students.find(s => s.id === id);
-}
-
 function create(data) {
+  const { name, grade, price, miroLink } = data;
+
+  if (!name) {
+    throw new Error("Name is required");
+  }
+
   const students = readData(FILE);
 
   const newStudent = {
-    id: generateId('st'),
-    name: data.name,
-    parentName: data.parentName,
-    email: data.email,
-    pricePerLesson: data.pricePerLesson
+    id: generateId("st"),
+    name,
+    grade: grade || "",
+    price: Number(price) || 0,
+    miroLink: miroLink || ""
   };
 
   students.push(newStudent);
@@ -35,7 +36,14 @@ function update(id, data) {
 
   if (index === -1) return null;
 
-  students[index] = { ...students[index], ...data };
+  students[index] = {
+    ...students[index],
+    name: data.name ?? students[index].name,
+    grade: data.grade ?? students[index].grade,
+    price: data.price ?? students[index].price,
+    miroLink: data.miroLink ?? students[index].miroLink
+  };
+
   writeData(FILE, students);
 
   return students[index];
@@ -44,15 +52,11 @@ function update(id, data) {
 function remove(id) {
   const students = readData(FILE);
   const filtered = students.filter(s => s.id !== id);
-
   writeData(FILE, filtered);
-
-  return true;
 }
 
 module.exports = {
   getAll,
-  getById,
   create,
   update,
   remove

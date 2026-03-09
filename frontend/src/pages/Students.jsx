@@ -3,155 +3,208 @@ import api from "../services/api";
 
 export default function Students() {
   const [students, setStudents] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
     name: "",
-    parentName: "",
-    email: "",
-    pricePerLesson: ""
+    grade: "",
+    price: "",
+    miroLink: ""
   });
 
-  const fetchStudents = () => {
-    api.get("/students").then(res => {
-      setStudents(res.data);
-    });
-  };
-
   useEffect(() => {
-    fetchStudents();
+    loadStudents();
   }, []);
 
-  const handleChange = (e) => {
+  const loadStudents = async () => {
+    const res = await api.get("/students");
+    setStudents(res.data);
+  };
+
+  const openCreate = () => {
+    setEditingId(null);
     setForm({
-      ...form,
-      [e.target.name]: e.target.value
+      name: "",
+      grade: "",
+      price: "",
+      miroLink: ""
     });
+    setModalOpen(true);
+  };
+
+  const openEdit = (student) => {
+    setEditingId(student.id);
+    setForm({
+      name: student.name,
+      grade: student.grade,
+      price: student.price,
+      miroLink: student.miroLink || ""
+    });
+    setModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await api.post("/students", {
-      ...form,
-      pricePerLesson: Number(form.pricePerLesson)
-    });
+    if (editingId) {
+      await api.patch(`/students/${editingId}`, form);
+    } else {
+      await api.post("/students", form);
+    }
 
-    setForm({
-      name: "",
-      parentName: "",
-      email: "",
-      pricePerLesson: ""
-    });
+    setModalOpen(false);
+    loadStudents();
+  };
 
-    setIsOpen(false);
-    fetchStudents();
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this student?")) return;
+
+    await api.delete(`/students/${id}`);
+    loadStudents();
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto">
 
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Students</h2>
 
         <button
-          onClick={() => setIsOpen(true)}
-          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg transition"
+          onClick={openCreate}
+          className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg"
         >
           + Add Student
         </button>
       </div>
 
-      {students.length === 0 ? (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-10 text-center text-gray-400">
-          No students yet
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {students.map(student => (
-            <div
-              key={student.id}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-6"
-            >
-              <h3 className="text-lg font-semibold mb-2">
-                {student.name}
-              </h3>
+      <div className="overflow-x-auto">
+        <table className="w-full border border-gray-800 rounded-xl overflow-hidden">
+          <thead className="bg-gray-900">
+            <tr>
+              <th className="p-3 text-left">Name</th>
+              <th className="p-3 text-left">Class</th>
+              <th className="p-3 text-left">Price</th>
+              <th className="p-3 text-left">Miro</th>
+              <th className="p-3 text-left">Actions</th>
+            </tr>
+          </thead>
 
-              <p className="text-gray-400 text-sm mb-1">
-                Parent: {student.parentName}
-              </p>
+          <tbody>
+            {students.map((s) => (
+              <tr key={s.id} className="border-t border-gray-800">
 
-              <p className="text-gray-300">
-                {student.pricePerLesson}€ per lesson
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+                <td className="p-3">{s.name}</td>
+                <td className="p-3">{s.grade}</td>
+                <td className="p-3">{s.price}€</td>
 
-      {/* Modal */}
-      {isOpen && (
+                <td className="p-3">
+                  {s.miroLink ? (
+                    <a
+                      href={s.miroLink}
+                      target="_blank"
+                      className="text-blue-400 underline"
+                    >
+                      Open
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+
+                <td className="p-3 space-x-2">
+                  <button
+                    onClick={() => openEdit(s)}
+                    className="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="bg-red-600 hover:bg-red-500 px-2 py-1 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </td>
+
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {modalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
+
           <div className="bg-gray-900 p-8 rounded-xl w-full max-w-md border border-gray-800">
-            
-            <h3 className="text-xl font-semibold mb-6">
-              Add Student
+
+            <h3 className="text-xl mb-6">
+              {editingId ? "Edit Student" : "Add Student"}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+
               <input
-                name="name"
-                placeholder="Student name"
+                placeholder="Name"
                 value={form.name}
-                onChange={handleChange}
-                className="w-full bg-gray-800 p-3 rounded-lg outline-none"
-                required
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+                className="w-full bg-gray-800 p-3 rounded-lg"
               />
 
               <input
-                name="parentName"
-                placeholder="Parent name"
-                value={form.parentName}
-                onChange={handleChange}
-                className="w-full bg-gray-800 p-3 rounded-lg outline-none"
+                placeholder="Class"
+                value={form.grade}
+                onChange={(e) =>
+                  setForm({ ...form, grade: e.target.value })
+                }
+                className="w-full bg-gray-800 p-3 rounded-lg"
               />
 
               <input
-                name="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full bg-gray-800 p-3 rounded-lg outline-none"
-              />
-
-              <input
-                name="pricePerLesson"
                 type="number"
-                placeholder="Price per lesson (€)"
-                value={form.pricePerLesson}
-                onChange={handleChange}
-                className="w-full bg-gray-800 p-3 rounded-lg outline-none"
-                required
+                placeholder="Price per lesson"
+                value={form.price}
+                onChange={(e) =>
+                  setForm({ ...form, price: e.target.value })
+                }
+                className="w-full bg-gray-800 p-3 rounded-lg"
+              />
+
+              <input
+                placeholder="Miro link"
+                value={form.miroLink}
+                onChange={(e) =>
+                  setForm({ ...form, miroLink: e.target.value })
+                }
+                className="w-full bg-gray-800 p-3 rounded-lg"
               />
 
               <div className="flex justify-end gap-4 pt-4">
+
                 <button
                   type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 bg-gray-700 rounded-lg"
+                  onClick={() => setModalOpen(false)}
+                  className="bg-gray-700 px-4 py-2 rounded-lg"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg"
+                  className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg"
                 >
                   Save
                 </button>
+
               </div>
+
             </form>
 
           </div>
+
         </div>
       )}
 
