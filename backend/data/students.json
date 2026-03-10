@@ -4,6 +4,9 @@
     "name": "Тимофей Василенко",
     "parentName": "Екатерина Василенко",
     "email": "none",
-    "pricePerLesson": 10
+    "pricePerLesson": 10,
+    "grade": "7",
+    "price": "10",
+    "miroLink": "https://miro.com/app/board/uXjVGUNHJzE=/"
   }
 ]

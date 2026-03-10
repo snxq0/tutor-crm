@@ -23,6 +23,13 @@ export default function Layout({ children }) {
             Lessons
           </Link>
 
+            <Link
+            to="/materials"
+            className="block px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+          >
+            Materials
+          </Link>
+
           <Link
             to="/invoices"
             className="block px-4 py-2 rounded-lg hover:bg-gray-800 transition"
