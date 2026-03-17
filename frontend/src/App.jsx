@@ -3,7 +3,8 @@ import Layout from "./components/Layout";
 import Students from "./pages/Students";
 import Lessons from "./pages/Lessons";
 import Invoices from "./pages/Invoices";
-import Materials from "./pages/Materials"
+import Materials from "./pages/Materials";
+import Classes from "./pages/Classes"
 
 
 
@@ -16,6 +17,7 @@ function App() {
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/materials" element={<Materials />} />
+          <Route path="/classes" element={<Classes />}></Route>
         </Routes>
       </Layout>
     </BrowserRouter>

@@ -21,22 +21,22 @@
     "date": "2026-03-11",
     "duration": 60,
     "note": "Akkusativ. Wiederholung",
-    "status": "planned"
+    "status": "completed"
   },
   {
     "id": "ls_1772391677016_156",
     "studentId": "st_1772305262574_885",
     "date": "2026-03-13",
     "duration": 60,
-    "note": "Математика. График функции в реальной жизни",
-    "status": "planned"
+    "note": "Функции в реальной жизни",
+    "status": "completed"
   },
   {
     "id": "ls_1772391687535_80",
     "studentId": "st_1772305262574_885",
     "date": "2026-03-18",
     "duration": 60,
-    "note": "",
+    "note": "Akkusativ. Wechselpräpositionen",
     "status": "planned"
   },
   {
@@ -44,15 +44,7 @@
     "studentId": "st_1772305262574_885",
     "date": "2026-03-20",
     "duration": 60,
-    "note": "",
-    "status": "planned"
-  },
-  {
-    "id": "ls_1772391702653_719",
-    "studentId": "st_1772305262574_885",
-    "date": "2026-03-20",
-    "duration": 60,
-    "note": "",
+    "note": "Линейная функция в реальной жизни\n",
     "status": "planned"
   },
   {

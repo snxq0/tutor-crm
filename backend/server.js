@@ -5,6 +5,7 @@ const studentsRoutes = require("./src/routes/students.routes");
 const lessonsRoutes = require("./src/routes/lessons.routes");
 const invoicesRoutes = require("./src/routes/invoices.routes");
 const materialsRoutes = require("./src/routes/materials.routes");
+const classesRoutes = require("./src/routes/classes.routes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/students", studentsRoutes);
 app.use("/lessons", lessonsRoutes);
 app.use("/invoices", invoicesRoutes);
 app.use("/materials", materialsRoutes);
+app.use("/classes", classesRoutes);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
